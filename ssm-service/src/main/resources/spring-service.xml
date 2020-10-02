@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:cotext="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://www.springframework.org/schema/aop
+          http://www.springframework.org/schema/aop/spring-aop.xsd
+          http://www.springframework.org/schema/tx
+          http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+        <!--<context:component-scan base-package="com.itheima"/>-->
+        <!--配置aop:在业务层的所有方法之前添加权限校验-->
+      <!--  <cotext:component-scan base-package="com.itheima"/>-->
+        <aop:config>
+                <!--配置切入点-->
+                <aop:pointcut id="pt1" expression="execution(* com.itheima.service.impl.*.*(..))"/>
+                <!--配置切面-->
+                <aop:aspect id="aspect1" ref="permissionAspect">
+                        <!--配置通知:-->
+                        <aop:before method="checkPermission" pointcut-ref="pt1"/>
+                </aop:aspect>
+        </aop:config>
+
+        <!--导入spring-mybatis.xml-->
+        <import resource="classpath:spring-mybatis.xml"></import>
+
+        <!--配置声明式事务-->
+        <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+                <property name="dataSource" ref="dataSource"></property>
+        </bean>
+        <!--开启事务注解驱动-->
+        <tx:annotation-driven transaction-manager="transactionManager"/>
+</beans>
